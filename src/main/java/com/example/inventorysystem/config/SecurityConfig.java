@@ -15,8 +15,16 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/uploads/**").permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers(
+                                "/api/auth/**",
+                                "/uploads/**"
+                        ).permitAll() // Public paths
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**"
+                        ).hasRole("ADMIN") // Swagger allowed only for ADMIN role
+                        .anyRequest().authenticated() // All other APIs need authentication
                 )
                 .csrf(csrf -> csrf.disable())
                 .httpBasic(Customizer.withDefaults());
